@@ -1,0 +1,47 @@
+Each year is its own table named Happines_[Year]. I had to update some tables and add a new column called row_number to assign a Happiness_Rank to the tables that were missing it
+
+ALTER TABLE Happiness_21 ADD COLUMN row_number INT;
+
+UPDATE Happiness_21 SET row_number = t.rn
+FROM (SELECT Country, ROW_NUMBER() OVER (ORDER BY Country) as rn FROM Happiness_21) as t
+WHERE Happiness_21.Country = t.Country;
+
+Then renamed the columns Happines_Rank
+
+After that I was able to grab the country and Happiness_Rank for each year using a series of joins
+
+Grabbing the Happiness Rank for each country for each year
+
+SELECT Happiness_15.Country
+    ,Happiness_15.Happiness_Rank AS '2015_Rank'
+    ,Happiness_16.Happiness_Rank AS '2016_Rank'
+    ,Happiness_17.Happiness_Rank AS '2017_Rank'
+    ,Happiness_18.Happiness_Rank AS '2018_Rank'
+    ,Happiness_19.Happiness_Rank AS '2019_Rank'
+    ,Happiness_20.Happiness_Rank AS '2020_Rank'
+    ,Happiness_21.Happiness_Rank AS '2021_Rank'
+    ,Happiness_22.Happiness_Rank AS '2022_Rank'
+FROM Happiness_15
+JOIN Happiness_16
+ON Happiness_15.Country = Happiness_16.Country
+JOIN Happiness_17
+ON Happiness_16.Country = Happiness_17.Country
+JOIN Happiness_18
+ON Happiness_17.Country = Happiness_18.Country
+JOIN Happiness_19
+ON Happiness_18.Country = Happiness_19.Country
+JOIN Happiness_20
+ON Happiness_19.Country = Happiness_20.Country
+JOIN Happiness_21
+ON Happiness_20.Country = Happiness_21.Country
+JOIN Happiness_22
+ON Happiness_21.Country = Happiness_22.Country;
+
+Here's the top 5 starting with 2015 and going to 2022
+
+Country      2015_Rank  2016_Rank  2017_Rank  2018_Rank  2019_Rank  2020_Rank  2021_Rank  2022_Rank
+Switzerland  1          2          4          5          6          3          3          4
+Iceland      2          3          3          4          4          4          4          3
+Denmark      3          1          2          3          2          2          2          2
+Norway       4          4          1          2          3          5          6          8
+Canada       5          6          7          7          9          11         14         15
